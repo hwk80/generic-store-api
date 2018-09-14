@@ -2,11 +2,10 @@ package de.tarent.challenge.store.products;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Sets;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
 
@@ -24,6 +23,7 @@ public class Product {
     private String name;
 
     @ElementCollection
+    @Fetch(FetchMode.SUBSELECT)
     private Set<String> eans;
 
     private Product() {
