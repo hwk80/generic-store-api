@@ -20,6 +20,7 @@ dependencies {
     compile 'com.google.guava:guava:23.6-jre'
 
     runtime 'com.h2database:h2'
+    runtime 'org.springframework.boot:spring-boot-devtools'
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
 }
