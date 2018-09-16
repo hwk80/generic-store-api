@@ -4,8 +4,13 @@ import com.google.common.base.MoreObjects;
 import com.google.common.collect.Sets;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.persistence.*;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 import java.util.Set;
 
@@ -18,12 +23,15 @@ public class Product {
     @GeneratedValue(strategy = AUTO)
     private Long id;
 
+    @NotNull
     private String sku;
 
+    @NotNull
     private String name;
 
     @ElementCollection
     @Fetch(FetchMode.SUBSELECT)
+    @NotEmpty
     private Set<String> eans;
 
     private Product() {
@@ -39,12 +47,24 @@ public class Product {
         return sku;
     }
 
+    public void setSku(String sku) {
+        this.sku = sku;
+    }
+
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Set<String> getEans() {
         return Sets.newHashSet(eans);
+    }
+
+    public void setEans(Set<String> eans) {
+        this.eans = eans;
     }
 
     @Override

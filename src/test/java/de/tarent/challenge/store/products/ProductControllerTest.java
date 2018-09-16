@@ -1,5 +1,6 @@
 package de.tarent.challenge.store.products;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,18 +16,15 @@ import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(ProductController.class)
 public class ProductControllerTest {
 
-    private static final String SKU = "123", NAME="Test Product";
+    private static final String SKU = "123", NAME = "Test Product";
     private static final Set<String> EANS = Sets.newHashSet("ean1", "ean2", "ean3");
 
     @Autowired
@@ -38,13 +36,13 @@ public class ProductControllerTest {
     @Before
     public void setUp() {
         Product testProduct = new Product(SKU, NAME, EANS);
-        Product testProduct2 = new Product(SKU+"2", NAME+" 2", EANS);
+        Product testProduct2 = new Product(SKU + "2", NAME + " 2", EANS);
 
         List<Product> allOrders = Arrays.asList(testProduct, testProduct2);
 
         given(productService.retrieveAllProducts()).willReturn(allOrders);
         given(productService.retrieveProductBySku(SKU)).willReturn(testProduct);
-        given(productService.retrieveProductBySku(SKU+"2")).willReturn(testProduct2);
+        given(productService.retrieveProductBySku(SKU + "2")).willReturn(testProduct2);
     }
 
     @Test
@@ -60,11 +58,21 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$[0].eans[1]", isIn(EANS.toArray())))
                 .andExpect(jsonPath("$[0].eans[2]", isIn(EANS.toArray())))
 
-                .andExpect(jsonPath("$[1].sku", is(SKU+"2")))
-                .andExpect(jsonPath("$[1].name", is(NAME+" 2")))
+                .andExpect(jsonPath("$[1].sku", is(SKU + "2")))
+                .andExpect(jsonPath("$[1].name", is(NAME + " 2")))
                 .andExpect(jsonPath("$[1].eans[0]", isIn(EANS.toArray())))
                 .andExpect(jsonPath("$[1].eans[1]", isIn(EANS.toArray())))
                 .andExpect(jsonPath("$[1].eans[2]", isIn(EANS.toArray())))
+        ;
+    }
+
+    @Test
+    public void retrieveProductsEmpty() throws Exception {
+        given(productService.retrieveAllProducts()).willReturn(Lists.newArrayList());
+
+        mvc.perform(get("/products"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)))
         ;
     }
 
@@ -77,7 +85,7 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$.eans[0]", isIn(EANS.toArray())))
                 .andExpect(jsonPath("$.eans[1]", isIn(EANS.toArray())))
                 .andExpect(jsonPath("$.eans[2]", isIn(EANS.toArray())))
-                ;
+        ;
     }
 
     @Test
@@ -85,6 +93,6 @@ public class ProductControllerTest {
         mvc.perform(get("/products/" + "unknownSku"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(""))
-                ;
+        ;
     }
 }
