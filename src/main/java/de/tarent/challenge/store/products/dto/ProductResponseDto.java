@@ -2,6 +2,7 @@ package de.tarent.challenge.store.products.dto;
 
 import com.google.common.collect.Sets;
 
+import java.util.Objects;
 import java.util.Set;
 
 public class ProductResponseDto {
@@ -9,6 +10,15 @@ public class ProductResponseDto {
     protected String sku;
     protected String name;
     protected Set<String> eans;
+
+    public ProductResponseDto() {
+    }
+
+    public ProductResponseDto(String sku, String name, Set<String> eans) {
+        this.sku = sku;
+        this.name = name;
+        this.eans = eans;
+    }
 
     public String getSku() {
         return sku;
@@ -32,5 +42,10 @@ public class ProductResponseDto {
 
     public void setEans(Set<String> eans) {
         this.eans = eans;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sku, name, eans);
     }
 }

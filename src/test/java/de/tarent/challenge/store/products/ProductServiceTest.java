@@ -2,18 +2,24 @@ package de.tarent.challenge.store.products;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import de.tarent.challenge.store.products.dto.ProductCreationDto;
+import de.tarent.challenge.store.products.dto.ProductResponseDto;
+import de.tarent.challenge.store.products.dto.ProductUpdateDto;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 public class ProductServiceTest {
@@ -38,25 +44,50 @@ public class ProductServiceTest {
 
     @Test
     public void retrieveAllProducts() {
-        List<Product> found = productService.retrieveAllProducts();
+        List<ProductResponseDto> found = productService.retrieveAllProducts();
 
         assertEquals(1, found.size());
-        assertEquals(new Product(SKU, NAME, EANS).hashCode(), found.get(0).hashCode());
+        assertEquals(new ProductResponseDto(SKU, NAME, EANS).hashCode(), found.get(0).hashCode());
     }
 
     @Test
     public void retrieveAllProductsEmpty() {
         given(productCatalog.findAll()).willReturn(new ArrayList<>());
 
-        List<Product> found = productService.retrieveAllProducts();
+        List<ProductResponseDto> found = productService.retrieveAllProducts();
 
         assertEquals(0, found.size());
     }
 
     @Test
     public void retrieveProductBySku() {
-        Product found = productService.retrieveProductBySku(SKU);
+        ProductResponseDto found = productService.retrieveProductBySku(SKU);
 
-        assertEquals(new Product(SKU, NAME, EANS).hashCode(), found.hashCode());
+        assertEquals(new ProductResponseDto(SKU, NAME, EANS).hashCode(), found.hashCode());
+    }
+
+    @Test
+    public void createProduct() {
+        productService.createProduct(new ProductCreationDto(SKU, NAME, EANS));
+
+        verify(productCatalog, times(1)).save(Mockito.any(Product.class));
+    }
+
+    @Test
+    public void updateProduct() {
+        productService.updateProduct(SKU, new ProductUpdateDto(NAME, EANS));
+        verify(productCatalog, times(1)).findBySku(SKU);
+        verify(productCatalog, times(1)).save(Mockito.any(Product.class));
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void updateProductFail() {
+        given(productCatalog.findBySku("unknown sku")).willReturn(null);
+        try {
+            productService.updateProduct("unknown sku", new ProductUpdateDto(NAME, EANS));
+        } finally {
+            verify(productCatalog, times(1)).findBySku("unknown sku");
+            verify(productCatalog, never()).save(Mockito.any(Product.class));
+        }
     }
 }

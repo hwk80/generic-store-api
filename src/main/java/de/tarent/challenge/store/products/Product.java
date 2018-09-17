@@ -6,10 +6,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 import java.util.Set;
@@ -24,14 +21,17 @@ public class Product {
     private Long id;
 
     @NotNull
+    @Column(unique = true, nullable = false)
     private String sku;
 
     @NotNull
+    @Column(nullable = false)
     private String name;
 
     @ElementCollection
     @Fetch(FetchMode.SUBSELECT)
     @NotEmpty
+    @Column(nullable = false)
     private Set<String> eans;
 
     private Product() {

@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class ProductTest {
 
@@ -43,15 +44,14 @@ public class ProductTest {
         updateDto.setEans(EANS);
 
         Product product = modelMapper.map(updateDto, Product.class);
-        assertEquals(product.getSku(), updateDto.getSku());
+        assertNull(product.getSku());
         assertEquals(updateDto.getName(), product.getName());
         assertEquals(updateDto.getEans(), product.getEans());
 
         product = new Product(SKU, NAME, EANS);
         updateDto = modelMapper.map(product, ProductUpdateDto.class);
-        assertEquals(product.getSku(), updateDto.getSku());
-        assertEquals(product.getName(), updateDto.getName());
-        assertEquals(product.getEans(), updateDto.getEans());
+        assertEquals(updateDto.getName(), product.getName());
+        assertEquals(updateDto.getEans(), product.getEans());
     }
 
 }
