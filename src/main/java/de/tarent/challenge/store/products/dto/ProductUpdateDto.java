@@ -1,9 +1,10 @@
 package de.tarent.challenge.store.products.dto;
 
 import com.google.common.collect.Sets;
-import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Set;
 
@@ -15,9 +16,13 @@ public class ProductUpdateDto {
     @NotEmpty
     protected Set<String> eans;
 
-    public ProductUpdateDto(String name, Set<String> eans) {
+    @NotNull
+    protected BigDecimal price;
+
+    public ProductUpdateDto(String name, Set<String> eans, BigDecimal price) {
         this.name = name;
         this.eans = eans;
+        this.price = price;
     }
 
     public ProductUpdateDto() {
@@ -39,8 +44,16 @@ public class ProductUpdateDto {
         this.eans = eans;
     }
 
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(name, eans);
+        return Objects.hash(name, eans, price);
     }
 }

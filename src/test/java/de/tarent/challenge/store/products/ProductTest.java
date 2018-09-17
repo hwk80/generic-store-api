@@ -6,6 +6,7 @@ import de.tarent.challenge.store.products.dto.ProductUpdateDto;
 import org.junit.Test;
 import org.modelmapper.ModelMapper;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -15,6 +16,7 @@ public class ProductTest {
 
     private static final String SKU = "123", NAME = "Test Product";
     private static final Set<String> EANS = Sets.newHashSet("ean1", "ean2", "ean3");
+    private static final BigDecimal PRICE = new BigDecimal(12.99);
 
     private static final ModelMapper modelMapper = new ModelMapper();
 
@@ -30,7 +32,7 @@ public class ProductTest {
         assertEquals(createDto.getName(), product.getName());
         assertEquals(createDto.getEans(), product.getEans());
 
-        product = new Product(SKU, NAME, EANS);
+        product = new Product(SKU, NAME, EANS, PRICE);
         createDto = modelMapper.map(product, ProductCreationDto.class);
         assertEquals(product.getSku(), createDto.getSku());
         assertEquals(product.getName(), createDto.getName());
@@ -48,7 +50,7 @@ public class ProductTest {
         assertEquals(updateDto.getName(), product.getName());
         assertEquals(updateDto.getEans(), product.getEans());
 
-        product = new Product(SKU, NAME, EANS);
+        product = new Product(SKU, NAME, EANS, PRICE);
         updateDto = modelMapper.map(product, ProductUpdateDto.class);
         assertEquals(updateDto.getName(), product.getName());
         assertEquals(updateDto.getEans(), product.getEans());

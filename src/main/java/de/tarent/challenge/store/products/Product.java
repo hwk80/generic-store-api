@@ -4,10 +4,12 @@ import com.google.common.base.MoreObjects;
 import com.google.common.collect.Sets;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Set;
 
@@ -34,13 +36,19 @@ public class Product {
     @Column(nullable = false)
     private Set<String> eans;
 
+    @NotNull
+    @Positive
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal price;
+
     private Product() {
     }
 
-    public Product(String sku, String name, Set<String> eans) {
+    public Product(String sku, String name, Set<String> eans, BigDecimal price) {
         this.sku = sku;
         this.name = name;
         this.eans = eans;
+        this.price = price;
     }
 
     public String getSku() {
@@ -67,6 +75,14 @@ public class Product {
         this.eans = eans;
     }
 
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -75,12 +91,13 @@ public class Product {
         return Objects.equals(id, product.id) &&
                 Objects.equals(sku, product.sku) &&
                 Objects.equals(name, product.name) &&
-                Objects.equals(eans, product.eans);
+                Objects.equals(eans, product.eans) &&
+                Objects.equals(price, product.price);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, sku, name, eans);
+        return Objects.hash(id, sku, name, eans, price);
     }
 
     @Override
@@ -90,6 +107,7 @@ public class Product {
                 .add("sku", sku)
                 .add("name", name)
                 .add("eans", eans)
+                .add("price", price)
                 .toString();
     }
 }

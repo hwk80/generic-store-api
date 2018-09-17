@@ -35,7 +35,7 @@ public class ProductService {
     }
 
     public void createProduct(ProductCreationDto product) {
-        productCatalog.save(mapModel(product, Product.class));
+        productCatalog.saveAndFlush(mapModel(product, Product.class));
     }
 
     public void updateProduct(String sku, ProductUpdateDto updateDto) {
@@ -48,7 +48,7 @@ public class ProductService {
         found.setName(updateDto.getName());
         found.setEans(updateDto.getEans());
 
-        productCatalog.save(found);
+        productCatalog.saveAndFlush(found);
     }
 
     private <D> D mapModel(Object source, Class<D> destinationType) {

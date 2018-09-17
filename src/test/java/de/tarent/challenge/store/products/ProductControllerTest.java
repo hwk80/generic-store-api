@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -38,6 +39,7 @@ public class ProductControllerTest {
 
     private static final String SKU = "123", NAME = "Test Product";
     private static final Set<String> EANS = Sets.newHashSet("ean1", "ean2", "ean3");
+    private static final BigDecimal PRICE = new BigDecimal(12.99);
 
     private final ObjectMapper jsonMapper = new ObjectMapper()
             .setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -50,8 +52,8 @@ public class ProductControllerTest {
 
     @Before
     public void setUp() {
-        ProductResponseDto testProduct = new ProductResponseDto(SKU, NAME, EANS);
-        ProductResponseDto testProduct2 = new ProductResponseDto(SKU + "2", NAME + " 2", EANS);
+        ProductResponseDto testProduct = new ProductResponseDto(SKU, NAME, EANS, PRICE);
+        ProductResponseDto testProduct2 = new ProductResponseDto(SKU + "2", NAME + " 2", EANS, PRICE);
 
         List<ProductResponseDto> allOrders = Arrays.asList(testProduct, testProduct2);
 
@@ -113,10 +115,7 @@ public class ProductControllerTest {
 
     @Test
     public void testCreateProduct() throws Exception {
-        ProductCreationDto testProduct = new ProductCreationDto();
-        testProduct.setSku(SKU);
-        testProduct.setName(NAME);
-        testProduct.setEans(EANS);
+        ProductCreationDto testProduct = new ProductCreationDto(SKU, NAME, EANS, PRICE);
 
         mvc.perform(post("/products/")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -155,9 +154,7 @@ public class ProductControllerTest {
 
     @Test
     public void testUpdateProduct() throws Exception {
-        ProductUpdateDto testProduct = new ProductUpdateDto();
-        testProduct.setName(NAME);
-        testProduct.setEans(EANS);
+        ProductUpdateDto testProduct = new ProductUpdateDto(NAME, EANS, PRICE);
 
         mvc.perform(put("/products/" + SKU)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -177,6 +174,7 @@ public class ProductControllerTest {
         ProductUpdateDto testProduct = new ProductUpdateDto();
         testProduct.setName(NAME);
         testProduct.setEans(EANS);
+        testProduct.setPrice(PRICE);
 
         mvc.perform(put("/products/" + "unknownSku")
                 .contentType(MediaType.APPLICATION_JSON)

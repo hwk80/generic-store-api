@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -20,6 +21,7 @@ public class ProductCatalogTest {
 
     private static final String SKU = "123", NAME = "Test Product";
     private static final Set<String> EANS = Sets.newHashSet("ean1", "ean2", "ean3");
+    private static final BigDecimal PRICE = new BigDecimal(12.99);
 
     @Autowired
     private TestEntityManager entityManager;
@@ -29,10 +31,9 @@ public class ProductCatalogTest {
 
     @Before
     public void setUp() {
-        Product testProduct = new Product(SKU, NAME, EANS);
-
-        entityManager.persist(testProduct);
-        entityManager.flush();
+        productCatalog.deleteAll();
+        Product testProduct = new Product(SKU, NAME, EANS, PRICE);
+        productCatalog.saveAndFlush(testProduct);
     }
 
     @Test
@@ -47,17 +48,17 @@ public class ProductCatalogTest {
 
     @Test
     public void testInsert() {
-        Product testProduct = new Product(SKU + "_new", NAME, EANS);
+        Product testProduct = new Product(SKU + "_new", NAME, EANS, PRICE);
 
-        productCatalog.save(testProduct);
+        productCatalog.saveAndFlush(testProduct);
     }
 
     @Test(expected = DataIntegrityViolationException.class)
     public void testDuplicateInsertFail() {
         // given a product with an already existent SKU
-        Product testProduct = new Product(SKU, NAME, EANS);
+        Product testProduct = new Product(SKU, NAME, EANS, PRICE);
 
-        productCatalog.save(testProduct);
+        productCatalog.saveAndFlush(testProduct);
     }
 
     @Test
@@ -65,7 +66,7 @@ public class ProductCatalogTest {
         Product product = productCatalog.findBySku(SKU);
         product.setName("Product got a new Name!");
 
-        Product saved = productCatalog.save(product);
+        Product saved = productCatalog.saveAndFlush(product);
         assertEquals(product, saved);
     }
 }
