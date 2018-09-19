@@ -160,4 +160,21 @@ public class CartControllerTest {
                 .andExpect(jsonPath("$.cartItems[1].price", is(PRICE)))
         ;
     }
+
+    @Test
+    public void checkout() throws Exception {
+        mvc.perform(put("/carts/" + 1 + "/checkout"))
+                .andDo(print())
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""))
+        ;
+
+        // unknown id
+        doThrow(NoSuchElementException.class)
+                .when(cartService).checkOut(999);
+        mvc.perform(put("/carts/" + 999 + "/checkout"))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+        ;
+    }
 }

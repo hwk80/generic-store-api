@@ -99,4 +99,14 @@ public class CartServiceTest {
 
         assertEquals(2, responseDto.getCartItems().size());
     }
+
+    @Test
+    public void checkOut() {
+        cartService.checkOut(1L);
+
+        verify(cartRepository, times(1))
+                .findById(Mockito.eq(1L));
+        verify(cartRepository, times(1))
+                .saveAndFlush(Mockito.any(Cart.class));
+    }
 }

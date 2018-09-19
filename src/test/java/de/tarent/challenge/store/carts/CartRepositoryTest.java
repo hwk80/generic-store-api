@@ -83,4 +83,23 @@ public class CartRepositoryTest {
         // should fail
         cartRepository.saveAndFlush(cart0);
     }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void checkOut() {
+        final List<Cart> all = cartRepository.findAll();
+        assertEquals(2, all.size());
+        assertEquals(2, cartRepository.findById(all.get(0).getId()).get().getCartItems().size());
+        assertEquals(SKU1, cartRepository.findById(all.get(0).getId()).get().getCartItems().get(0).getSku());
+        assertEquals(SKU2, cartRepository.findById(all.get(0).getId()).get().getCartItems().get(1).getSku());
+        assertEquals(1, cartRepository.findById(all.get(1).getId()).get().getCartItems().size());
+        assertEquals(SKU2, cartRepository.findById(all.get(1).getId()).get().getCartItems().get(0).getSku());
+
+        Cart cart1 = all.get(1);
+        cart1.setCheckedOut();
+        cartRepository.saveAndFlush(cart1);
+
+        // add item to cart
+        cart1.getCartItems().add(new CartItem(SKU2, 1, PRICE));
+        cartRepository.saveAndFlush(cart1);
+    }
 }

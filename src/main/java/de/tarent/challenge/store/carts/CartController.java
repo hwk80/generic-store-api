@@ -53,6 +53,12 @@ public class CartController {
         return ResponseEntity.ok(responseDto);
     }
 
+    @PutMapping("/{cartId}/checkout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateProduct(@PathVariable long cartId) {
+        cartService.checkOut(cartId);
+    }
+
     @ExceptionHandler({NoSuchElementException.class, EmptyResultDataAccessException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No cart found for this id.")
     public void handleResourceNotFoundException() {

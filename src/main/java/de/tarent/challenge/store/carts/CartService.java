@@ -78,12 +78,22 @@ public class CartService {
         return modelMapper.map(cart, CartResponseDto.class);
     }
 
-    public CartResponseDto getCart(long id) {
-        final Optional<Cart> found = cartRepository.findById(id);
+    public CartResponseDto getCart(long cartId) {
+        final Optional<Cart> found = cartRepository.findById(cartId);
         if (!found.isPresent()) {
             return null;
         }
         CartResponseDto responseDto = modelMapper.map(found.get(), CartResponseDto.class);
         return responseDto;
+    }
+
+    public void checkOut(long cartId) {
+        final Cart cart = cartRepository.findById(cartId).get();
+        if (cart == null) {
+            throw new NoSuchElementException();
+        }
+        cart.setCheckedOut();
+
+        cartRepository.saveAndFlush(cart);
     }
 }
