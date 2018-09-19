@@ -49,7 +49,7 @@ public class ProductServiceTest {
         List<ProductResponseDto> found = productService.retrieveAllProducts();
 
         assertEquals(1, found.size());
-        assertEquals(new ProductResponseDto(SKU, NAME, EANS, PRICE).hashCode(), found.get(0).hashCode());
+        assertEquals(new ProductResponseDto(SKU, NAME, EANS, PRICE, true).hashCode(), found.get(0).hashCode());
     }
 
     @Test
@@ -65,7 +65,7 @@ public class ProductServiceTest {
     public void retrieveProductBySku() {
         ProductResponseDto found = productService.retrieveProductBySku(SKU);
 
-        assertEquals(new ProductResponseDto(SKU, NAME, EANS, PRICE).hashCode(), found.hashCode());
+        assertEquals(new ProductResponseDto(SKU, NAME, EANS, PRICE, true).hashCode(), found.hashCode());
     }
 
     @Test

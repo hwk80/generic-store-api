@@ -41,6 +41,8 @@ class Product {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
+    private boolean isAvailable = true;
+
     private Product() {
     }
 
@@ -83,12 +85,21 @@ class Product {
         this.price = price;
     }
 
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Product)) return false;
         Product product = (Product) o;
-        return Objects.equals(id, product.id) &&
+        return isAvailable == product.isAvailable &&
+                Objects.equals(id, product.id) &&
                 Objects.equals(sku, product.sku) &&
                 Objects.equals(name, product.name) &&
                 Objects.equals(eans, product.eans) &&
@@ -97,7 +108,7 @@ class Product {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, sku, name, eans, price);
+        return Objects.hash(id, sku, name, eans, price, isAvailable);
     }
 
     @Override

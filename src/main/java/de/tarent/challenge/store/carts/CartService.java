@@ -3,6 +3,7 @@ package de.tarent.challenge.store.carts;
 import de.tarent.challenge.store.carts.dto.CartItemCreateDto;
 import de.tarent.challenge.store.carts.dto.CartResponseDto;
 import de.tarent.challenge.store.carts.dto.CartUpsertDto;
+import de.tarent.challenge.store.exceptions.ProductNotAvailableException;
 import de.tarent.challenge.store.products.ProductService;
 import de.tarent.challenge.store.products.dto.ProductResponseDto;
 import org.modelmapper.ModelMapper;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CartService {
@@ -31,25 +33,29 @@ public class CartService {
     }
 
     public Long createCart(CartUpsertDto dto) {
+        final List<CartItem> cartItems = dto.getCartItems().stream()
+                .map(this::createCartItem)
+                .collect(Collectors.toList());
+
         final Cart cart = modelMapper.map(dto, Cart.class);
+        cart.setCartItems(cartItems);
         cartRepository.saveAndFlush(cart);
         return cart.getId();
     }
 
     public CartResponseDto addToCart(long cartId, CartItemCreateDto cartItemCreateDto) {
         final Cart cart = cartRepository.findById(cartId).get();
-        final ProductResponseDto product = productService.retrieveProductBySku(cartItemCreateDto.getSku());
-        if (cart == null || product == null) {
+        if (cart == null) {
             throw new NoSuchElementException();
         }
-        CartItem cartItem = new CartItem();
-        cartItem.setPrice(product.getPrice());
-        cartItem.setQuantity(cartItemCreateDto.getQuantity());
+
+        CartItem cartItem = createCartItem(cartItemCreateDto);
 
         final List<CartItem> cartItems = cart.getCartItems();
         cartItems.add(cartItem);
         cart.setCartItems(cartItems);
         cartRepository.saveAndFlush(cart);
+
         return modelMapper.map(cart, CartResponseDto.class);
     }
 
@@ -95,5 +101,18 @@ public class CartService {
         cart.setCheckedOut();
 
         cartRepository.saveAndFlush(cart);
+    }
+
+    private CartItem createCartItem(CartItemCreateDto dto) {
+        final ProductResponseDto product = productService.retrieveProductBySku(dto.getSku());
+        if (product == null || !product.isAvailable()) {
+            throw new ProductNotAvailableException();
+        }
+
+        CartItem cartItem = new CartItem();
+        cartItem.setPrice(product.getPrice());
+        cartItem.setQuantity(dto.getQuantity());
+
+        return cartItem;
     }
 }

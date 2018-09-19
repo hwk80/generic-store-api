@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import de.tarent.challenge.store.carts.dto.CartItemCreateDto;
 import de.tarent.challenge.store.carts.dto.CartResponseDto;
 import de.tarent.challenge.store.carts.dto.CartUpsertDto;
+import de.tarent.challenge.store.exceptions.ProductNotAvailableException;
 import de.tarent.challenge.store.products.ProductService;
 import de.tarent.challenge.store.products.dto.ProductResponseDto;
 import org.junit.Before;
@@ -48,18 +49,35 @@ public class CartServiceTest {
                 new CartItem(SKU2, QUANTITY2, PRICE)));
 
         given(cartRepository.findById(anyLong())).willReturn(Optional.of(testCart));
-        given(productService.retrieveProductBySku(SKU1)).willReturn(new ProductResponseDto(SKU1, NAME1, EANS, PRICE));
-        given(productService.retrieveProductBySku(SKU2)).willReturn(new ProductResponseDto(SKU2, NAME2, EANS, PRICE));
+        given(productService.retrieveProductBySku(SKU1)).willReturn(new ProductResponseDto(SKU1, NAME1, EANS, PRICE, true));
+        given(productService.retrieveProductBySku(SKU2)).willReturn(new ProductResponseDto(SKU2, NAME2, EANS, PRICE, true));
     }
 
     @Test
     public void createCart() {
         final CartUpsertDto cartUpsertDto = new CartUpsertDto();
-        cartUpsertDto.setCartItems(Lists.newArrayList(new CartItemCreateDto(SKU1, QUANTITY1)));
+        cartUpsertDto.setCartItems(Lists.newArrayList(
+                new CartItemCreateDto(SKU1, QUANTITY1),
+                new CartItemCreateDto(SKU2, QUANTITY2)));
+
         cartService.createCart(cartUpsertDto);
 
         verify(cartRepository, times(1))
                 .saveAndFlush(Mockito.any(Cart.class));
+        verify(productService, times(2))
+                .retrieveProductBySku(Mockito.anyString());
+    }
+
+    @Test(expected = ProductNotAvailableException.class)
+    public void createCartWithUnavailableProduct() {
+        given(productService.retrieveProductBySku("n/a")).willReturn(null);
+
+        final CartUpsertDto cartUpsertDto = new CartUpsertDto();
+        cartUpsertDto.setCartItems(Lists.newArrayList(
+                new CartItemCreateDto(SKU1, QUANTITY1),
+                new CartItemCreateDto("n/a", QUANTITY2)));
+
+        cartService.createCart(cartUpsertDto);
     }
 
     @Test
@@ -73,6 +91,15 @@ public class CartServiceTest {
                 .retrieveProductBySku(Mockito.eq(SKU1));
         verify(cartRepository, times(1))
                 .saveAndFlush(Mockito.any(Cart.class));
+    }
+
+    @Test(expected = ProductNotAvailableException.class)
+    public void addUnavailableProductToCart() {
+        given(productService.retrieveProductBySku(SKU1))
+                .willReturn(new ProductResponseDto(SKU1, NAME1, EANS, PRICE, false));
+
+        CartItemCreateDto createDto = new CartItemCreateDto(SKU1, QUANTITY1);
+        cartService.addToCart(1L, createDto);
     }
 
     @Test

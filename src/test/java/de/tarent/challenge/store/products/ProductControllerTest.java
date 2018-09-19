@@ -26,8 +26,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -52,8 +52,8 @@ public class ProductControllerTest {
 
     @Before
     public void setUp() {
-        ProductResponseDto testProduct = new ProductResponseDto(SKU, NAME, EANS, PRICE);
-        ProductResponseDto testProduct2 = new ProductResponseDto(SKU + "2", NAME + " 2", EANS, PRICE);
+        ProductResponseDto testProduct = new ProductResponseDto(SKU, NAME, EANS, PRICE, true);
+        ProductResponseDto testProduct2 = new ProductResponseDto(SKU + "2", NAME + " 2", EANS, PRICE, true);
 
         List<ProductResponseDto> allOrders = Arrays.asList(testProduct, testProduct2);
 
@@ -155,6 +155,7 @@ public class ProductControllerTest {
     @Test
     public void testUpdateProduct() throws Exception {
         ProductUpdateDto testProduct = new ProductUpdateDto(NAME, EANS, PRICE);
+        testProduct.setAvailable(false);
 
         mvc.perform(put("/products/" + SKU)
                 .contentType(MediaType.APPLICATION_JSON)

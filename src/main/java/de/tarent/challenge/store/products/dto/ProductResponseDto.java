@@ -8,19 +8,21 @@ import java.util.Set;
 
 public class ProductResponseDto {
 
-    protected String sku;
-    protected String name;
-    protected Set<String> eans;
-    protected BigDecimal price;
+    private String sku;
+    private String name;
+    private Set<String> eans;
+    private BigDecimal price;
+    private boolean isAvailable;
 
     public ProductResponseDto() {
     }
 
-    public ProductResponseDto(String sku, String name, Set<String> eans, BigDecimal price) {
+    public ProductResponseDto(String sku, String name, Set<String> eans, BigDecimal price, boolean isAvailable) {
         this.sku = sku;
         this.name = name;
         this.eans = eans;
         this.price = price;
+        this.isAvailable = isAvailable;
     }
 
     public String getSku() {
@@ -55,8 +57,28 @@ public class ProductResponseDto {
         this.price = price;
     }
 
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ProductResponseDto)) return false;
+        ProductResponseDto that = (ProductResponseDto) o;
+        return isAvailable == that.isAvailable &&
+                Objects.equals(sku, that.sku) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(eans, that.eans) &&
+                Objects.equals(price, that.price);
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(sku, name, eans, price);
+        return Objects.hash(sku, name, eans, price, isAvailable);
     }
 }

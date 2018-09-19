@@ -11,13 +11,13 @@ import java.util.Set;
 public class ProductUpdateDto {
 
     @NotNull
-    protected String name;
-
+    private String name;
     @NotEmpty
-    protected Set<String> eans;
-
+    private Set<String> eans;
     @NotNull
-    protected BigDecimal price;
+    private BigDecimal price;
+
+    private boolean isAvailable = true;
 
     public ProductUpdateDto(String name, Set<String> eans, BigDecimal price) {
         this.name = name;
@@ -52,8 +52,27 @@ public class ProductUpdateDto {
         this.price = price;
     }
 
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ProductUpdateDto)) return false;
+        ProductUpdateDto that = (ProductUpdateDto) o;
+        return isAvailable == that.isAvailable &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(eans, that.eans) &&
+                Objects.equals(price, that.price);
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(name, eans, price);
+        return Objects.hash(name, eans, price, isAvailable);
     }
 }

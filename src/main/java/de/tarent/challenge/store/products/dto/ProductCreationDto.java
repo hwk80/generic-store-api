@@ -11,16 +11,15 @@ import java.util.Set;
 public class ProductCreationDto {
 
     @NotNull
-    protected String sku;
-
+    private String sku;
     @NotNull
-    protected String name;
-
+    private String name;
     @NotEmpty
-    protected Set<String> eans;
-
+    private Set<String> eans;
     @NotNull
-    protected BigDecimal price;
+    private BigDecimal price;
+
+    private boolean isAvailable = true;
 
     public ProductCreationDto(String sku, String name, Set<String> eans, BigDecimal price) {
         this.sku = sku;
@@ -64,8 +63,28 @@ public class ProductCreationDto {
         this.price = price;
     }
 
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ProductCreationDto)) return false;
+        ProductCreationDto that = (ProductCreationDto) o;
+        return isAvailable == that.isAvailable &&
+                Objects.equals(sku, that.sku) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(eans, that.eans) &&
+                Objects.equals(price, that.price);
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(sku, name, eans, price);
+        return Objects.hash(sku, name, eans, price, isAvailable);
     }
 }

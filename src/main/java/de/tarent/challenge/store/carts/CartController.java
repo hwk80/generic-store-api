@@ -3,6 +3,7 @@ package de.tarent.challenge.store.carts;
 import de.tarent.challenge.store.carts.dto.CartItemCreateDto;
 import de.tarent.challenge.store.carts.dto.CartResponseDto;
 import de.tarent.challenge.store.carts.dto.CartUpsertDto;
+import de.tarent.challenge.store.exceptions.ProductNotAvailableException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -69,4 +70,8 @@ public class CartController {
     public void handleDuplicateKeyException() {
     }
 
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "The product is currently not available.")
+    @ExceptionHandler(ProductNotAvailableException.class)
+    public void handleProductNotAvailableException() {
+    }
 }
