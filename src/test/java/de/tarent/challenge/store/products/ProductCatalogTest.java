@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -22,9 +21,6 @@ public class ProductCatalogTest {
     private static final String SKU = "123", NAME = "Test Product";
     private static final Set<String> EANS = Sets.newHashSet("ean1", "ean2", "ean3");
     private static final BigDecimal PRICE = new BigDecimal(12.99);
-
-    @Autowired
-    private TestEntityManager entityManager;
 
     @Autowired
     private ProductCatalog productCatalog;

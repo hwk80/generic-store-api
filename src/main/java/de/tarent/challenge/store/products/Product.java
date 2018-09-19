@@ -16,7 +16,7 @@ import java.util.Set;
 import static javax.persistence.GenerationType.AUTO;
 
 @Entity
-public class Product {
+class Product {
 
     @Id
     @GeneratedValue(strategy = AUTO)

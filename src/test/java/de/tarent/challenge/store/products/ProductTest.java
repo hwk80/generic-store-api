@@ -21,7 +21,7 @@ public class ProductTest {
     private static final ModelMapper modelMapper = new ModelMapper();
 
     @Test
-    public void testCreateDtoMapping() {
+    public void createDtoMapping() {
         ProductCreationDto createDto = new ProductCreationDto();
         createDto.setSku(SKU);
         createDto.setName(NAME);
@@ -40,7 +40,7 @@ public class ProductTest {
     }
 
     @Test
-    public void testUpdateDtoMapping() {
+    public void updateDtoMapping() {
         ProductUpdateDto updateDto = new ProductUpdateDto();
         updateDto.setName(NAME);
         updateDto.setEans(EANS);
