@@ -13,13 +13,13 @@ import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Set;
 
-import static javax.persistence.GenerationType.AUTO;
+import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 class Product {
 
     @Id
-    @GeneratedValue(strategy = AUTO)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @NotNull

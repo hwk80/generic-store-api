@@ -31,11 +31,14 @@ public class ProductService {
     }
 
     public ProductResponseDto retrieveProductBySku(String sku) {
-        return mapModel(productCatalog.findBySku(sku), ProductResponseDto.class);
+        final Product product = productCatalog.findBySku(sku);
+        if (product == null) throw new NoSuchElementException();
+        return mapModel(product, ProductResponseDto.class);
     }
 
     public void createProduct(ProductCreationDto product) {
-        productCatalog.saveAndFlush(mapModel(product, Product.class));
+        final Product model = mapModel(product, Product.class);
+        productCatalog.saveAndFlush(model);
     }
 
     public void updateProduct(String sku, ProductUpdateDto updateDto) {
@@ -47,6 +50,8 @@ public class ProductService {
         found.setSku(sku);
         found.setName(updateDto.getName());
         found.setEans(updateDto.getEans());
+        found.setPrice(updateDto.getPrice());
+        found.setAvailable(updateDto.isAvailable());
 
         productCatalog.saveAndFlush(found);
     }

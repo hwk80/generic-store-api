@@ -49,6 +49,7 @@ public class CartService {
             throw new NoSuchElementException();
         }
 
+        cart.checkLifeCycleState();
         CartItem cartItem = createCartItem(cartItemCreateDto);
 
         final List<CartItem> cartItems = cart.getCartItems();
@@ -71,6 +72,8 @@ public class CartService {
         if (cart == null) {
             throw new NoSuchElementException();
         }
+        cart.checkLifeCycleState();
+
         final List<CartItem> cartItems = cart.getCartItems();
         cartItems.removeIf(i -> i.getSku().equals(sku));
 
@@ -87,10 +90,17 @@ public class CartService {
     public CartResponseDto getCart(long cartId) {
         final Optional<Cart> found = cartRepository.findById(cartId);
         if (!found.isPresent()) {
-            return null;
+            throw new NoSuchElementException();
         }
         CartResponseDto responseDto = modelMapper.map(found.get(), CartResponseDto.class);
         return responseDto;
+    }
+
+    public List<CartResponseDto> retrieveAllCarts() {
+        return cartRepository.findAll().stream()
+                .map(p -> mapModel(p, CartResponseDto.class))
+                .collect(Collectors.toList())
+                ;
     }
 
     public void checkOut(long cartId) {
@@ -110,9 +120,15 @@ public class CartService {
         }
 
         CartItem cartItem = new CartItem();
+        cartItem.setSku(product.getSku());
         cartItem.setPrice(product.getPrice());
         cartItem.setQuantity(dto.getQuantity());
 
         return cartItem;
+    }
+
+    private <D> D mapModel(Object source, Class<D> destinationType) {
+        if (source == null) return null;
+        return modelMapper.map(source, destinationType);
     }
 }

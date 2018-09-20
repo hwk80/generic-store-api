@@ -84,7 +84,7 @@ public class CartRepositoryTest {
         cartRepository.saveAndFlush(cart0);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = DataIntegrityViolationException.class)
     public void checkOut() {
         final List<Cart> all = cartRepository.findAll();
         assertEquals(2, all.size());

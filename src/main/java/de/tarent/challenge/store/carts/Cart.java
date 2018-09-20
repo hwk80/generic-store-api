@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,6 +28,8 @@ class Cart {
 
     @NotNull
     private boolean isCheckedOut = false;
+
+    private Date checkoutDate = null;
 
     public Cart() {
     }
@@ -65,8 +68,12 @@ class Cart {
     @PreUpdate
     @PreRemove
     public void checkLifeCycleState() {
-        if (isCheckedOut)
-            throw new UnsupportedOperationException("The cart is checked out and cannot be changed anymore.");
+        if (isCheckedOut) {
+            if (checkoutDate != null) {
+                throw new UnsupportedOperationException("The cart is checked out and cannot be changed anymore.");
+            }
+            checkoutDate = new Date();
+        }
     }
 
     @Override

@@ -28,8 +28,13 @@ public class CartController {
     }
 
     @GetMapping("/{id}")
-    public CartResponseDto retrieveProductBySku(@PathVariable Long id) {
+    public CartResponseDto retrieveCartById(@PathVariable Long id) {
         return cartService.getCart(id);
+    }
+
+    @GetMapping
+    public Iterable<CartResponseDto> retrieveAllCarts() {
+        return cartService.retrieveAllCarts();
     }
 
     @PostMapping
@@ -56,7 +61,7 @@ public class CartController {
 
     @PutMapping("/{cartId}/checkout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateProduct(@PathVariable long cartId) {
+    public void checkoutCart(@PathVariable long cartId) {
         cartService.checkOut(cartId);
     }
 
